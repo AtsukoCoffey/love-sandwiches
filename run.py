@@ -17,6 +17,7 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('love_sandwiches')
 
+
 def get_sales_data():
     """
     Get sales figures input from the user.
@@ -32,11 +33,12 @@ def get_sales_data():
         data_str = input("Enter your data here: \n")
 
         sales_data = data_str.split(",")
-        
+
         if validate_data(sales_data):
             print("Data is valid!")
             break
     return sales_data
+
 
 def validate_data(values):
     """
@@ -57,7 +59,6 @@ def validate_data(values):
     return True
 
 
-
 def update_worksheet(data, worksheet):
     """
     Update worksheet, add new row with the list data provided
@@ -68,6 +69,7 @@ def update_worksheet(data, worksheet):
     worksheet_to_update.append_row(data)
     print(f"{worksheet} worksheet updated successfully\n")
 
+
 def calculate_surplus_data(sales_row):
     """
     Compare sales with stock and calculate the surplus for each item type.
@@ -77,15 +79,16 @@ def calculate_surplus_data(sales_row):
     - Negative surplus indicates extra made when stock was sold out.
     """
     print("Calculating surplus data...\n")
-    stock = SHEET.worksheet("stock").get_all_values() #all the stock row
+    stock = SHEET.worksheet("stock").get_all_values()  #all the stock row
     # pprint(stock)
-    stock_row = stock[-1] #slice the last row
+    stock_row = stock[-1]  #slice the last row
 
     surplus_data = []
     for stock, sales in zip(stock_row, sales_row):
         surplus = int(stock) - sales
         surplus_data.append(surplus)
     return surplus_data
+
 
 def get_last_5_entries_sales():
     """
@@ -98,10 +101,11 @@ def get_last_5_entries_sales():
     # print(column)
 
     columns = []
-    for ind in range(1, 7): # 6 goes 0 to 5, worksheet from 1, not index
+    for ind in range(1, 7):  # 6 goes 0 to 5, worksheet from 1, not index
         column = sales.col_values(ind)
-        columns.append(column[-5:]) #5: 5th from last to last
+        columns.append(column[-5:])  #5: 5th from last to last
     return columns
+
 
 def calculate_stock_data(data):
     """
@@ -117,6 +121,7 @@ def calculate_stock_data(data):
         stock_data.append(round(stock_num))
     return stock_data
 
+
 def main():
     """
     Run all program functions
@@ -130,10 +135,13 @@ def main():
     stock_data = calculate_stock_data(sales_columns)
     update_worksheet(stock_data, "stock")
 
+
 print("Welcome to Love Sandwiches Data Automation")
 stock_data = main()
 
 # Love Sandwiches Challenge
+
+
 def get_stock_values(data):
     """
     Print out the calculated stock numbers for each sandwich type.
@@ -148,6 +156,7 @@ def get_stock_values(data):
     #     new_data[heading] = stock_num
     # return new_data
     return {heading: data for heading, data in zip(headings, data)}
-    
+
+
 stock_values = get_stock_values(stock_data)
 print(stock_values)
